@@ -85,8 +85,16 @@ function makeDraggable(el, key) {
         el.style.left = saved.x + "px";
         el.style.top = saved.y + "px";
     } else {
-        el.style.left = "45%";
-        el.style.top = "45%";
+        const centerX = window.innerWidth / 2 - el.offsetWidth / 2;
+        const centerY = window.innerHeight / 2 - el.offsetHeight / 2;
+        if (key === "clock_date_pos") {
+            const timeEl = document.getElementById("time");
+            el.style.left = centerX + "px";
+            el.style.top = (centerY + timeEl.offsetHeight + 10) + "px";
+        } else {
+            el.style.left = centerX + "px";
+            el.style.top = centerY + "px";
+        }
     }
 
     el.addEventListener("mousedown", (e) => {
@@ -110,6 +118,28 @@ function makeDraggable(el, key) {
             y: el.offsetTop
         }));
     });
+
+    // right-click to reset to center
+    el.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        const timeEl = document.getElementById("time");
+        const dateEl = document.getElementById("date");
+        const centerX = window.innerWidth / 2 - timeEl.offsetWidth / 2;
+        const centerY = window.innerHeight / 2 - timeEl.offsetHeight / 2;
+        const dateCenterY = centerY + timeEl.offsetHeight + 10; // offset date below time
+        timeEl.style.left = centerX + "px";
+        timeEl.style.top = centerY + "px";
+        dateEl.style.left = centerX + "px";
+        dateEl.style.top = dateCenterY + "px";
+        localStorage.setItem("clock_time_pos", JSON.stringify({
+            x: centerX,
+            y: centerY
+        }));
+        localStorage.setItem("clock_date_pos", JSON.stringify({
+            x: centerX,
+            y: dateCenterY
+        }));
+    });
 }
 
 makeDraggable(document.getElementById("time"), "clock_time_pos");
@@ -131,6 +161,23 @@ function toggleColor(el, key) {
 
 toggleColor(document.getElementById("time"), "clock_time_color");
 toggleColor(document.getElementById("date"), "clock_date_color");
+
+// keyboard shortcut to reset positions
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'r' || e.key === 'R') {
+        const timeEl = document.getElementById("time");
+        const dateEl = document.getElementById("date");
+        const centerX = window.innerWidth / 2 - timeEl.offsetWidth / 2;
+        const centerY = window.innerHeight / 2 - timeEl.offsetHeight / 2;
+        const dateCenterY = centerY + timeEl.offsetHeight + 10;
+        timeEl.style.left = centerX + "px";
+        timeEl.style.top = centerY + "px";
+        dateEl.style.left = centerX + "px";
+        dateEl.style.top = dateCenterY + "px";
+        localStorage.setItem("clock_time_pos", JSON.stringify({x: centerX, y: centerY}));
+        localStorage.setItem("clock_date_pos", JSON.stringify({x: centerX, y: dateCenterY}));
+    }
+});
 </script>
 
 </body>
