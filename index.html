@@ -1,112 +1,159 @@
-<!doctype html>
-    <!-- what are you looking for? -->
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SirPro — Mohammed Alamri</title>
-  <link rel="icon" type="image/x-icon" href="/images/sp-icon.ico">
-  <style>
-    /* Reset */   
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-
-    /* Background GIF (fixed, cover) */
-    body{
-      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-      background: url('https://cdn.sirpro.cc/s/splogo.gif') center/cover no-repeat fixed;
-      color:#fff;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+<meta charset="UTF-8">
+<title>Transparent Draggable Clock</title>
+<link rel="icon" type="image/x-icon" href="/images/sp-icon.ico">
+<style>
+    html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        overflow: hidden;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        color: white;
+        user-select: none;
     }
 
-    /* Dark translucent overlay for readability */
-    .overlay{
-      position:fixed;inset:0;background:linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55));backdrop-filter: blur(2px);
-      display:flex;align-items:center;justify-content:center;padding:24px;
+    .item {
+        position: absolute;
+        cursor: grab;
     }
 
-    .card{
-      width:100%;max-width:920px;background:rgba(0,0,0,0.25);border-radius:18px;padding:28px;box-shadow:0 8px 30px rgba(0,0,0,0.6);text-align:center;
-      border:1px solid rgba(255,255,255,0.06);
+    .item:active {
+        cursor: grabbing;
     }
 
-    .logo{
-      width:84px;height:84px;border-radius:14px;object-fit:contain;margin:0 auto 16px;display:block;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);
+    #time {
+        font-size: 1.4vw;
+        font-weight: 600;
     }
 
-    h1{font-size:48px;margin-bottom:6px;letter-spacing:1px}
-    h2{font-size:18px;margin-bottom:18px;opacity:0.9;font-weight:600}
-
-    .bio-tags{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
-    .tag{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.06);font-size:13px;border:1px solid rgba(255,255,255,0.04)}
-
-    .buttons{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,0.07);min-width:150px;justify-content:center;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));transition:transform .12s ease,box-shadow .12s;color:#fff}
-    .btn:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,0.5)}
-
-    .btn:visited { color: #fff; }
-
-    .btn svg{width:18px;height:18px;opacity:0.95}
-
-    /* Footer small notes */
-    .small{margin-top:18px;font-size:13px;opacity:0.75}
-
-    /* Responsive */
-    @media (max-width:520px){
-      h1{font-size:34px}
-      .btn{min-width:120px;padding:10px 12px}
+    #date {
+        text-align: center;
+        line-height: 1.1;
     }
-  </style>
+
+    #day {
+        font-size: 1.54vw;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+
+    #fullDate {
+        font-size: 0.77vw;
+        opacity: 0.85;
+        margin-top: 0.4vh;
+    }
+
+    @media (max-width: 768px) {
+        #time {
+            font-size: 3.5vw;
+        }
+        #day {
+            font-size: 4.2vw;
+        }
+        #fullDate {
+            font-size: 2.1vw;
+        }
+    }
+</style>
 </head>
+
 <body>
-  <div class="overlay">
-    <div class="card" role="main">
-      <img class="logo" src="https://cdn.sirpro.cc/s/splogo.png" alt="SirPro logo"/>
 
-      <!-- Names -->
-      <h1>SirPro</h1>
-      <h2>Mohammed Alamri</h2>
+<div class="item" id="time">--:--</div>
 
-      <!-- Tags / interests -->
-      <div class="bio-tags" aria-hidden>
-        <div class="tag">PC Gamer 🎮</div>
-        <div class="tag">Tech Enthusiast ⚙️</div>
-      </div>
+<div class="item" id="date">
+    <div id="day">---</div>
+    <div id="fullDate">----</div>
+</div>
 
-      <!-- Social buttons: edit the hrefs in the script section below -->
-      <div class="buttons" id="links">
-        <!-- Buttons inserted by JS -->
-      </div>
+<script>
+function updateClock() {
+    const now = new Date();
 
-      <div class="small">Discord @1pr</div>
-    </div>
-  </div>
+    document.getElementById("time").textContent =
+        now.toLocaleTimeString(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+        });
 
-  <script>
-    const socials = [
-      {name:'Steam', url:'https://steamcommunity.com/id/SirPrro/', icon:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#00adee"><path d="M.329 10.333A8.01 8.01 0 0 0 7.99 16C12.414 16 16 12.418 16 8s-3.586-8-8.009-8A8.006 8.006 0 0 0 0 7.468l.003.006 4.304 1.769A2.2 2.2 0 0 1 5.62 8.88l1.96-2.844-.001-.04a3.046 3.046 0 0 1 3.042-3.043 3.046 3.046 0 0 1 3.042 3.043 3.047 3.047 0 0 1-3.111 3.044l-2.804 2a2.223 2.223 0 0 1-3.075 2.11 2.22 2.22 0 0 1-1.312-1.568L.33 10.333Z"/><path d="M4.868 12.683a1.715 1.715 0 0 0 1.318-3.165 1.7 1.7 0 0 0-1.263-.02l1.023.424a1.261 1.261 0 1 1-.97 2.33l-.99-.41a1.7 1.7 0 0 0 .882.84Zm3.726-6.687a2.03 2.03 0 0 0 2.027 2.029 2.03 2.03 0 0 0 2.027-2.029 2.03 2.03 0 0 0-2.027-2.027 2.03 2.03 0 0 0-2.027 2.027m2.03-1.527a1.524 1.524 0 1 1-.002 3.048 1.524 1.524 0 0 1 .002-3.048"/></svg>'},
-      {name:'Discord', url:'https://discord.com/users/170605060655415296', icon:'<svg viewBox="0 0 24 24" fill="#5865f2" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0189 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/></svg>'},
-      {name:'Instagram', url:'https://www.instagram.com/zdx.i/', icon:'<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="ig" x1="0%" y1="100%"><stop offset="0%" stop-color="#fdf497"/><stop offset="45%" stop-color="#fd5949"/><stop offset="60%" stop-color="#d6249f"/><stop offset="90%" stop-color="#285aeb"/></linearGradient></defs><rect x="2" y="2" width="20" height="20" rx="5" fill="url(#ig)"/><circle cx="12" cy="12" r="4" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17" cy="7" r="1" fill="#fff"/></svg>'},
-      {name:'Twitch', url:'https://twitch.tv/sirpro', icon:'<svg viewBox="0 0 24 24" fill="#9146ff" xmlns="http://www.w3.org/2000/svg"><path d="M4.265 3 3 6.236v11.509h3.754V21l3.754-3.755h4.753L21 12.745V3H4.265zM7.764 7.764h1.508v5.029H7.764V7.764zm4.259 0h1.508v5.029h-1.508V7.764z"/></svg>'},
-      {name:'YouTube', url:'https://www.youtube.com/@SirPro', icon:'<svg viewBox="0 0 24 24" fill="#ff0000" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>'},
-      {name:'Twitter', url:'https://x.com/zdxi_', icon:'<svg viewBox="0 0 24 24" fill="#1da1f2" xmlns="http://www.w3.org/2000/svg"><path d="M22 5.8c-.6.3-1.3.6-2 .7.7-.4 1.3-1 1.6-1.8-.7.4-1.6.7-2.5.8C18 4.6 17 4 16 4c-1.8 0-3.2 1.5-3.2 3.3 0 .3 0 .6.1.9C9.4 8 6 6.3 3.8 3.5c-.4.6-.6 1.3-.6 2 0 1.2.6 2.2 1.6 2.8-.6 0-1.2-.2-1.7-.5v.1c0 1.9 1.4 3.5 3.2 3.9-.3.1-.6.1-.9.1-.2 0-.4 0-.6-.1.4 1.3 1.6 2.2 3 2.2-1.1.9-2.5 1.4-4 1.4H6c1.5.9 3.3 1.4 5.2 1.4 6.2 0 9.6-5.3 9.6-9.8v-.4c.7-.5 1.2-1 1.6-1.7-.6.3-1.3.5-2 .6z"/></svg>'},
-      {name:'GitHub', url:'https://github.com/SirPr0', icon:'<svg viewBox="0 0 24 24" fill="#181717" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C7.6 2 4 5.6 4 10c0 3.6 2.3 6.6 5.5 7.6.4.1.5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.3-.9-.8-1.2-.8-1.2-.6-.4 0-.4 0-.4.7.1 1 .7 1 1 .6 1 1.6.7 2 .5.1-.4.3-.7.6-1-1.7-.2-3.5-.9-3.5-4 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8.6-.2 1.3-.3 2-.3s1.4.1 2 .3c1.5-1 2.2-.8 2.2-.8.5 1.1.2 1.9.1 2.1.5.5.8 1.3.8 2.1 0 3.1-1.8 3.8-3.5 4 .3.3.6.8.6 1.6v2.3c0 .2.1.5.5.4C17.7 16.6 20 13.6 20 10c0-4.4-3.6-8-8-8z"/></svg>'},
-      {name:'PayPal', url:'https://paypal.me/sirpr0', icon:'<svg viewBox="0 0 24 24" fill="#0070ba" xmlns="http://www.w3.org/2000/svg"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.622 1.612 1.045 1.073.91 2.614.428 3.843-.562 1.419-2.04 2.447-4.185 2.447h-2.37l-.595 3.7h2.37c2.614 0 4.545.539 5.64 1.613 1.043 1.069.894 2.608.414 3.836-.562 1.42-2.04 2.446-4.186 2.446h-2.36l-.595 3.718c-.078.499-.536.86-1.05.86H7.08a.64.64 0 0 1-.633-.74l.63-3.957zm2.754-6.664h2.37c.972 0 1.715-.213 2.201-.615.491-.406.635-.991.427-1.558-.202-.545-.764-.837-1.613-.837h-2.37l-.595 3.01zm0-5.474h2.37c.972 0 1.715-.213 2.201-.615.491-.406.635-.991.427-1.558-.202-.545-.764-.837-1.613-.837h-2.37l-.595 3.01z"/></svg>'},
-    ];
+    document.getElementById("day").textContent =
+        now.toLocaleDateString(undefined, { weekday: "long" });
 
-    const container = document.getElementById('links');
-    socials.forEach(s => {
-      const a = document.createElement('a');
-      a.className = 'btn';
-      a.href = s.url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.innerHTML = s.icon + `<span>${s.name}</span>`;
-      container.appendChild(a);
+    document.getElementById("fullDate").textContent =
+        now.toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        });
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
+function makeDraggable(el, key) {
+    let offsetX = 0, offsetY = 0, dragging = false;
+
+    // load saved position
+    const saved = JSON.parse(localStorage.getItem(key));
+    if (saved) {
+        el.style.left = saved.x + "px";
+        el.style.top = saved.y + "px";
+    } else {
+        el.style.left = "45%";
+        el.style.top = "45%";
+    }
+
+    el.addEventListener("mousedown", (e) => {
+        dragging = true;
+        offsetX = e.clientX - el.offsetLeft;
+        offsetY = e.clientY - el.offsetTop;
     });
 
-    // If you want the GIF not to autoplay in some browsers, nothing to do: GIFs loop by themselves.
-  </script>
+    document.addEventListener("mousemove", (e) => {
+        if (!dragging) return;
+        el.style.left = (e.clientX - offsetX) + "px";
+        el.style.top = (e.clientY - offsetY) + "px";
+    });
+
+    document.addEventListener("mouseup", () => {
+        if (!dragging) return;
+        dragging = false;
+
+        // save position
+        localStorage.setItem(key, JSON.stringify({
+            x: el.offsetLeft,
+            y: el.offsetTop
+        }));
+    });
+}
+
+makeDraggable(document.getElementById("time"), "clock_time_pos");
+makeDraggable(document.getElementById("date"), "clock_date_pos");
+
+function toggleColor(el, key) {
+    el.addEventListener('dblclick', () => {
+        const currentColor = el.style.color || 'white';
+        const newColor = currentColor === 'white' ? 'black' : 'white';
+        el.style.color = newColor;
+        localStorage.setItem(key, newColor);
+    });
+
+    // load saved color
+    const savedColor = localStorage.getItem(key);
+    if (savedColor) {
+        el.style.color = savedColor;
+    }
+}
+
+toggleColor(document.getElementById("time"), "clock_time_color");
+toggleColor(document.getElementById("date"), "clock_date_color");
+</script>
+
 </body>
 </html>
