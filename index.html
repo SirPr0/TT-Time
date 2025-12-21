@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>TT-Clock</title>
+<title>TT Clock</title>
 <link rel="icon" type="image/x-icon" href="https://cdn.sirpro.cc/s/QbZlfI.ico">
 <style>
     html, body {
@@ -26,37 +26,24 @@
     }
 
     #time {
-        font-size: 1.4vw;
+        font-size: 1.344vw;
         font-weight: 600;
     }
 
     #date {
+        font-size: 1.344vw;
+        font-weight: 600;
         text-align: center;
         line-height: 1.1;
-    }
-
-    #day {
-        font-size: 1.54vw;
-        font-weight: 600;
-        letter-spacing: 0.15em;
         text-transform: uppercase;
-    }
-
-    #fullDate {
-        font-size: 0.77vw;
-        opacity: 0.85;
-        margin-top: 0.4vh;
     }
 
     @media (max-width: 768px) {
         #time {
-            font-size: 3.5vw;
+            font-size: 3.36vw;
         }
-        #day {
-            font-size: 4.2vw;
-        }
-        #fullDate {
-            font-size: 2.1vw;
+        #date {
+            font-size: 3.36vw;
         }
     }
 </style>
@@ -66,10 +53,7 @@
 
 <div class="item" id="time">--:--</div>
 
-<div class="item" id="date">
-    <div id="day">---</div>
-    <div id="fullDate">----</div>
-</div>
+<div class="item" id="date">----</div>
 
 <script>
 function updateClock() {
@@ -82,15 +66,11 @@ function updateClock() {
             hour12: true
         });
 
-    document.getElementById("day").textContent =
-        now.toLocaleDateString(undefined, { weekday: "long" });
-
-    document.getElementById("fullDate").textContent =
-        now.toLocaleDateString(undefined, {
-            month: "short",
-            day: "numeric",
-            year: "numeric"
-        });
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const year = now.getFullYear();
+    const weekday = now.toLocaleDateString(undefined, { weekday: "short" });
+    document.getElementById("date").textContent = `${month}/${day}/${year} | ${weekday}`;
 }
 
 updateClock();
@@ -157,5 +137,3 @@ toggleColor(document.getElementById("date"), "clock_date_color");
 
 </body>
 </html>
-
-
