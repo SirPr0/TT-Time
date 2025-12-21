@@ -79,7 +79,6 @@ setInterval(updateClock, 1000);
 function makeDraggable(el, key) {
     let offsetX = 0, offsetY = 0, dragging = false;
 
-    // load saved position
     const saved = JSON.parse(localStorage.getItem(key));
     if (saved) {
         el.style.left = saved.x + "px";
@@ -119,7 +118,6 @@ function makeDraggable(el, key) {
         }));
     });
 
-    // right-click to reset to center
     el.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         const timeEl = document.getElementById("time");
@@ -162,7 +160,6 @@ function toggleColor(el, key) {
 toggleColor(document.getElementById("time"), "clock_time_color");
 toggleColor(document.getElementById("date"), "clock_date_color");
 
-// keyboard shortcut to reset positions
 document.addEventListener('keydown', (e) => {
     if (e.key === 'r' || e.key === 'R') {
         const timeEl = document.getElementById("time");
@@ -182,3 +179,4 @@ document.addEventListener('keydown', (e) => {
 
 </body>
 </html>
+
