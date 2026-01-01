@@ -46,55 +46,6 @@
             font-size: 2.5116vw;
         }
     }
-
-#countdown {
-  position: absolute;
-  top: 45%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 80px;
-  font-weight: bold;
-  color: white;
-  display: none;
-}
-
-#message {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 72px;
-  font-weight: 900;
-  background: linear-gradient(
-    90deg,
-    red,
-    orange,
-    yellow,
-    green,
-    cyan,
-    blue,
-    violet
-  );
-  background-size: 400% 400%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: rainbow 2s linear infinite;
-  display: none;
-  white-space: nowrap;
-}
-
-@keyframes rainbow {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
-}
-
-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-}
 </style>
 </head>
 
@@ -104,9 +55,6 @@ canvas {
 
 <div class="item" id="date">----</div>
 
-<div id="countdown"></div>
-<div id="message">Happy New Year 2026</div>
-<canvas id="fireworks"></canvas>
 
 <script>
 function updateClock() {
@@ -132,7 +80,11 @@ setInterval(updateClock, 1000);
 function makeDraggable(el, key) {
     let offsetX = 0, offsetY = 0, dragging = false;
 
-    const saved = JSON.parse(localStorage.getItem(key));
+    let saved = null;
+    try {
+        saved = JSON.parse(localStorage.getItem(key));
+    } catch (e) {}
+
     if (saved) {
         el.style.left = saved.x + "px";
         el.style.top = saved.y + "px";
@@ -230,131 +182,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 
-
-
-const canvas = document.getElementById("fireworks");
-const ctx = canvas.getContext("2d");
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let fireworks = [];
-let animationId;
-let fireworkInterval;
-
-function random(min, max) {
-  return Math.random() * (max - min) + min;
-}
-
-function createFirework() {
-  const x = random(100, canvas.width - 100);
-  const y = random(50, canvas.height / 2);
-  const particles = [];
-
-  for (let i = 0; i < 50; i++) {
-    particles.push({
-      x,
-      y,
-      vx: random(-4, 4),
-      vy: random(-4, 4),
-      life: random(30, 60),
-      color: `hsl(${Math.random() * 360}, 100%, 50%)`
-    });
-  }
-
-  fireworks.push(particles);
-}
-
-function animateFireworks() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  fireworks.forEach((particles, index) => {
-    particles.forEach((p, i) => {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life--;
-
-      ctx.fillStyle = p.color;
-      ctx.fillRect(p.x, p.y, 3, 3);
-
-      if (p.life <= 0) {
-        particles.splice(i, 1);
-      }
-    });
-
-    if (particles.length === 0) {
-      fireworks.splice(index, 1);
-    }
-  });
-
-  animationId = requestAnimationFrame(animateFireworks);
-}
-
-function startFireworks() {
-  animateFireworks();
-  fireworkInterval = setInterval(createFirework, 300);
-}
-
-function stopFireworks() {
-  clearInterval(fireworkInterval);
-  cancelAnimationFrame(animationId);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-window.addEventListener("resize", () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
-
-let timeChecker = setInterval(() => {
-    const now = new Date();
-
-    if (
-        now.getFullYear() === 2025 &&
-        now.getMonth() === 11 &&
-        now.getDate() === 31 &&
-        now.getHours() === 23 &&
-        now.getMinutes() === 59 &&
-        now.getSeconds() === 50
-    ) {
-        clearInterval(timeChecker);
-        startNewYear();
-    }
-}, 500);
-
-function startNewYear() {
-    const now = new Date();
-    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
-    let timeLeft = Math.floor((midnight - now) / 1000);
-    const countdownEl = document.getElementById("countdown");
-    const messageEl = document.getElementById("message");
-
-    countdownEl.style.display = "block";
-
-    let minutes = Math.floor(timeLeft / 60);
-    let seconds = timeLeft % 60;
-    countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-    const countdownTimer = setInterval(() => {
-        timeLeft--;
-        minutes = Math.floor(timeLeft / 60);
-        seconds = timeLeft % 60;
-        countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-        if (timeLeft < 0) {
-            clearInterval(countdownTimer);
-            countdownEl.style.display = "none";
-            messageEl.style.display = "block";
-            startFireworks();
-            setTimeout(() => {
-                messageEl.style.display = "none";
-                stopFireworks();
-            }, 25000);
-        }
-    }, 1000);
-}
 </script>
 
 </body>
 </html>
-
